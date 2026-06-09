@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,19 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 class StoryAgent:
+    THEMES = [
+        "Kindness",
+        "Sharing",
+        "Honesty",
+        "Courage",
+        "Helping Others",
+        "Teamwork",
+        "Patience",
+        "Gratitude",
+        "Responsibility",
+        "Empathy"
+    ]
+    
     """Stage 2 Gemini story provider with placeholder image fallbacks."""
 
     def __init__(self) -> None:
@@ -27,11 +41,21 @@ class StoryAgent:
             raise ValueError("GEMINI_API_KEY not found in .env")
 
         self.client = genai.Client(api_key=api_key)
+        
 
     def get_story(self) -> dict[str, Any]:
+        
+        theme = random.choice(self.THEMES)
 
+        print(f"Selected theme: {theme}")
+        
         prompt = """
 Generate a YouTube Shorts children's story.
+
+Theme:
+THEME_PLACEHOLDER
+
+The moral must result directly from Chiku's actions and the consequences of those actions.
 
 Main Character:
 Chiku Rabbit
@@ -128,6 +152,7 @@ Do not wrap JSON in code blocks.
 Return JSON only.
 """
 
+        prompt= prompt.replace("THEME_PLACEHOLDER",theme)
         print("Generating story from Gemini...")
 
         response = self.client.models.generate_content(
@@ -144,6 +169,8 @@ Return JSON only.
             response_text = response_text.strip()
 
         story = json.loads(response_text)
+        
+        story["theme"] = theme
 
         for scene in story["scenes"]:
             scene["image_path"] = (
