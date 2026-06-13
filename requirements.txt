@@ -2,3 +2,4 @@ moviepy>=1.0.3,<2.0.0
 Pillow>=10.4.0
 google-genai
 python-dotenv
+edge-tts==7.2.8
