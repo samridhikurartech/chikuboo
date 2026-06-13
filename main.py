@@ -11,6 +11,7 @@ import sys
 from agents.story_agent import StoryAgent
 from agents.video_agent import VideoAgent
 from agents.voice_agent import VoiceAgent
+from agents.image_agent import ImageAgent
 
 
 def setup_logging() -> None:
@@ -30,15 +31,16 @@ def main() -> int:
         story = StoryAgent().get_story()
         logger.info("Story loaded: %s", story["title"])
 
-        logger.info("Step 2/4: Loading sample narration audio")
-        audio_path = VoiceAgent().get_narration_audio()
-        logger.info("Audio ready: %s", audio_path)
+        logger.info("Step 2/5: Generating images")
+        ImageAgent().generate_images(story)
 
-        logger.info("Step 3/4: Rendering video")
+        logger.info("Step 3/5: Loading sample narration audio")
+        audio_path = VoiceAgent().get_narration_audio()
+
+        logger.info("Step 4/5: Rendering video")
         video_path = VideoAgent().create_video(story, audio_path)
 
-        logger.info("Step 4/4: Done")
-        logger.info("Final video saved: %s", video_path)
+        logger.info("Step 5/5: Done")
         return 0
     except Exception:
         logger.exception("Pipeline failed")

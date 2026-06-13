@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 import json
 import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -154,11 +155,37 @@ Return JSON only.
 
         prompt= prompt.replace("THEME_PLACEHOLDER",theme)
         print("Generating story from Gemini...")
+        
+        response = None
 
-        response = self.client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-        )
+        for attempt in range(5):
+
+            try:
+
+                response = self.client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=prompt,
+                )
+
+                break
+
+            except Exception as e:
+
+                print(
+                    f"Attempt {attempt + 1} failed:",
+                    e
+                )
+
+                if attempt < 4:
+                    time.sleep(
+                        5 * (attempt + 1)
+                    )
+
+        if response is None:
+
+            raise RuntimeError(
+                "Gemini story generation failed after 5 attempts"
+            )
 
         response_text = response.text.strip()
 
