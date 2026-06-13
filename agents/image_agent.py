@@ -107,16 +107,16 @@ class ImageAgent:
         # )
 
         prompt_box = WebDriverWait(
-            self.driver,
-            30
-        ).until(
-            EC.presence_of_element_located(
-                (
-                    By.CSS_SELECTOR,
-                    '[contenteditable="true"]'
+                self.driver,
+                30
+            ).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        '[contenteditable="true"]'
+                    )
                 )
             )
-        )
         
         self.driver.execute_script(
             "arguments[0].focus();",

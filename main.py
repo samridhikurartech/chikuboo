@@ -35,7 +35,7 @@ def main() -> int:
         ImageAgent().generate_images(story)
 
         logger.info("Step 3/5: Loading sample narration audio")
-        audio_path = VoiceAgent().get_narration_audio()
+        audio_path = VoiceAgent().get_narration_audio(story)
 
         logger.info("Step 4/5: Rendering video")
         video_path = VideoAgent().create_video(story, audio_path)

@@ -1,35 +1,58 @@
 from __future__ import annotations
 
-import wave
+import asyncio
 from pathlib import Path
 
+import edge_tts
 
 class VoiceAgent:
     """Stage 1 local narration provider."""
 
     def __init__(self) -> None:
-        self.sample_audio_path = Path("assets/sample_audio/narration.wav")
+        self.sample_audio_path = Path("assets/sample_audio/narration.mp3")
         self.sample_audio_path.parent.mkdir(parents=True, exist_ok=True)
 
-    def get_narration_audio(self) -> Path:
-        if not self.sample_audio_path.exists():
-            self._create_silent_audio(self.sample_audio_path)
+    def get_narration_audio(
+            self,
+            story,
+        ) -> Path:
 
-        return self.sample_audio_path
+            narration_text = " ".join(
+                scene["narration"]
+                for scene in story["scenes"]
+            )
+            
+            print(
+                "Generating narration from story..."
+            )
 
-    @staticmethod
-    def _create_silent_audio(audio_path: Path) -> None:
-        audio_path.parent.mkdir(parents=True, exist_ok=True)
+            asyncio.run(
+                self._generate_audio(
+                    narration_text
+                )
+            )
 
-        duration_seconds = 36
-        sample_rate = 44100
+            return self.sample_audio_path
+        
+        
+    async def _generate_audio(
+            self,
+            text,
+        ):
 
-        with wave.open(str(audio_path), "w") as wav_file:
-            wav_file.setnchannels(1)
-            wav_file.setsampwidth(2)
-            wav_file.setframerate(sample_rate)
+            communicate = edge_tts.Communicate(
+                text,
+                voice="en-US-AnaNeural",
+                rate="-10%"
+            )
 
-            silence = b"\x00\x00" * sample_rate * duration_seconds
-            wav_file.writeframes(silence)
+            await communicate.save(
+                str(self.sample_audio_path)
+            )
 
-        print(f"Created silent audio: {audio_path}")
+            print(
+                "Narration generated:",
+                self.sample_audio_path
+            )
+
+    
