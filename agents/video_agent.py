@@ -30,14 +30,28 @@ class VideoAgent:
 
         audio = AudioFileClip(str(narration_audio_path))
         scene_duration = audio.duration / len(scenes)
+        
+        
+        clips = []
 
-        clips = [
-            self._create_scene_clip(
-                Path(scene["image_path"]),
-                scene_duration,
+        for scene in scenes:
+
+            image_path = Path(
+                "assets/generated_images/"
+                f"scene{scene['scene_number']}.png"
             )
-            for scene in scenes
-        ]
+
+            print(
+                "Using image:",
+                image_path
+            )
+
+            clips.append(
+                self._create_scene_clip(
+                    image_path,
+                    scene_duration,
+                )
+            )
 
         video = concatenate_videoclips(clips, method="compose")
         video = video.with_audio(audio)
