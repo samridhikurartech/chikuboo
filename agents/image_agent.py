@@ -26,8 +26,20 @@ class ImageAgent:
         self.driver = webdriver.Chrome(
             options=options
         )
+        
+        print("CONNECTED")
 
-        print("Connected to Gemini Chrome")
+        try:
+            print("Handles:", self.driver.window_handles)
+        except Exception as e:
+            print("Handles ERROR:", e)
+
+        try:
+            print("Current URL:", self.driver.current_url)
+        except Exception as e:
+            print("URL ERROR:", e)
+
+        ##print("Connected to Gemini Chrome")
         
         self.downloads_folder = os.path.join(
             os.path.expanduser("~"),
@@ -54,24 +66,45 @@ class ImageAgent:
             "https://gemini.google.com/images"
         )
         
+        print(
+            "Current URL after navigation:",
+            self.driver.current_url
+        )
+                
+        print("Navigation complete")
+        
         
         time.sleep(2)
 
         for window in gw.getWindowsWithTitle("Google Gemini"):
-            window.restore()
-            window.activate()
-            break
 
+            try:
+
+                window.restore()
+                window.activate()
+
+                print(
+                    "Activated:",
+                    window.title
+                )
+
+                break
+
+            except Exception as e:
+
+                print(
+                    "Activation error:",
+                    e
+                )
+        
+        # self.driver.maximize_window()
+        
         time.sleep(2)
-        
-        self.driver.maximize_window()
-        
-        time.sleep(3)
        
 
-        self.driver.switch_to.window(
-            self.driver.current_window_handle
-        )
+        # self.driver.switch_to.window(
+        #     self.driver.current_window_handle
+        # )
 
         prompt_box = WebDriverWait(
             self.driver,
@@ -267,11 +300,30 @@ class ImageAgent:
 
 
     def generate_images(self, story):
+        
+        print("About to navigate")
 
-        scene = story["scenes"][0]
+        for file in os.listdir(
+            "assets/generated_images"
+        ):
 
-        self.generate_image(
-            scene["image_prompt"],
-            scene["scene_number"]
-        )
+            if file.endswith(".png"):
+
+                os.remove(
+                    os.path.join(
+                        "assets/generated_images",
+                        file
+                    )
+                )
+
+        for scene in story["scenes"]:
+
+            print(
+                f"Starting Scene {scene['scene_number']}"
+            )
+
+            self.generate_image(
+                scene["image_prompt"],
+                scene["scene_number"]
+            )
 
