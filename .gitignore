@@ -16,3 +16,6 @@ output/videos/*
 !assets/sample_images/.gitkeep
 !assets/sample_audio/.gitkeep
 !output/videos/.gitkeep
+test_*.py
+chiku_test.jpg
+gemini_test.py
