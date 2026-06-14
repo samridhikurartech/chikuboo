@@ -3,12 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import textwrap
+
 from moviepy import (
     AudioFileClip,
     ColorClip,
     CompositeVideoClip,
     ImageClip,
     concatenate_videoclips,
+    TextClip,
 )
 
 
@@ -49,6 +52,7 @@ class VideoAgent:
             clips.append(
                 self._create_scene_clip(
                     image_path,
+                    scene["narration"],
                     scene_duration,
                 )
             )
@@ -75,6 +79,7 @@ class VideoAgent:
     def _create_scene_clip(
         self,
         image_path: Path,
+        subtitle_text: str,
         duration: float,
     ) -> CompositeVideoClip:
 
@@ -90,8 +95,40 @@ class VideoAgent:
             .resized(height=self.video_height)
             .with_position("center")
         )
+        
+        wrapped_text = "\n".join(
+            textwrap.wrap(
+                subtitle_text,
+                width=20
+            )
+        )
+        
+        subtitle = (
+            TextClip(
+                text=wrapped_text,
+                font_size=70,
+                color="white",
+                stroke_color="black",
+                stroke_width=5,
+                method="caption",
+                text_align="center",
+                size=(900, None),
+                horizontal_align="center",
+            )
+            .with_duration(duration)
+            .with_position(
+                (
+                    "center",
+                    self.video_height - 350,
+                )
+            )
+        )
 
         return CompositeVideoClip(
-            [background, image],
+            [
+                background,
+                image,
+                subtitle,
+            ],
             size=(self.video_width, self.video_height),
         )
