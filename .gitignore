@@ -12,6 +12,7 @@ output/
 assets/sample_images/*.jpg
 assets/sample_images/*.png
 assets/sample_audio/*.mp3
+assets/generated_images/
 output/videos/*
 !assets/sample_images/.gitkeep
 !assets/sample_audio/.gitkeep
@@ -19,3 +20,4 @@ output/videos/*
 test_*.py
 chiku_test.jpg
 gemini_test.py
+
